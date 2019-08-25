@@ -269,7 +269,7 @@ module RubyLanguageServer
     private
 
     def add_variable(name, line, column, scope = @current_scope)
-      scope.variables.where(name: name).first_or_create(line: line, column: column)
+      scope.variables.where(name: name).first_or_create(line: line, column: column, code_file: scope.code_file)
       if scope.top_line.blank?
         scope.top_line = line
         scope.save!
