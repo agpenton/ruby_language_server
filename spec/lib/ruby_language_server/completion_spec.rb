@@ -30,6 +30,10 @@ describe RubyLanguageServer::Completion do
         end
       end
 
+      class Bar
+        def bing
+        end
+      end
     end
 
     module Bar
@@ -70,6 +74,14 @@ describe RubyLanguageServer::Completion do
       position_scopes = @scope_parser.root_scope.self_and_descendants.for_line(context_scope.top_line + 1)
       completions = RubyLanguageServer::Completion.scope_completions(context, position_scopes)
       assert_equal([], completions.map(&:first))
+    end
+
+    it "should see baz and bing for a bar instance" do
+      context = ['bar', 'b']
+      context_scope = nar_naz_scope
+      position_scopes = @scope_parser.root_scope.self_and_descendants.for_line(context_scope.top_line + 1)
+      completions = RubyLanguageServer::Completion.completion(context, position_scopes.last, position_scopes)
+      assert_equal(['bar', 'bing'], completions.map(&:first))
     end
   end
 end

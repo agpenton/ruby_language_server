@@ -52,15 +52,14 @@ module RubyLanguageServer
       def scope_completions_in_target_context(context, context_scope, scopes)
         context_word = context[-2]
         if context_word.match?(/^[A-Z]/)
-          scope = scope_with_name(context_word, scopes)
         else
           context_word = context_word.split(/_/).map(&:capitalize).join('')
-          scope = scope_with_name(context_word, scopes)
-          RubyLanguageServer.logger.debug("scope_with_name: #{scope}")
         end
-        scope ||= context_scope
-        RubyLanguageServer.logger.debug("scope: #{scope}")
-        scope_completions(context.last, [scope] + scopes.includes(:variables))
+        return_scopes = scopes.where(name: context_word)
+        return_scopes = RubyLanguageServer::ScopeData::Scope.where('path like ?', "%#{context_word}") if return_scopes.empty?
+        return_scopes = context_scope if return_scopes.empty?
+        RubyLanguageServer.logger.debug("scope: #{return_scopes}")
+        scope_completions(context.last, return_scopes + scopes.includes(:variables))
       end
 
       def scope_completions(word, scopes)
