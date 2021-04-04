@@ -3,7 +3,9 @@
 # For development:
 # docker run -it -v $PWD:/project -v $PWD:/tmp/src -w /tmp/src ruby_language_server sh -c 'bundle && guard'
 FROM ruby:2.7-alpine
+COPY qemu-arm-static /usr/bin
 LABEL maintainer="kurt@CircleW.org"
+LABEL maintainer="agpenton@gmail.com"
 
 RUN gem update bundler
 
