@@ -40,9 +40,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'bundler'
   spec.add_dependency 'etc'
   spec.add_dependency 'fuzzy_match' # completion matching
-  spec.add_dependency 'json'
-  spec.add_dependency 'ostruct'
-  spec.add_dependency 'prism'
+
+  spec.add_dependency 'activerecord', '~>5.2.4.5'
+  # spec.add_dependency 'activerecord', '~>5.2'
   spec.add_dependency 'sqlite3'
 
   spec.add_development_dependency 'debug'
