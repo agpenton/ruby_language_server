@@ -9,8 +9,8 @@ module RubyLanguageServer
       @mutex = mutex
       server.io = self
       loop do
-        (id, response) = process_request(STDIN)
-        return_response(id, response, STDOUT) unless id.nil?
+        (id, response) = process_request($stdin)
+        return_response(id, response, $stdout) unless id.nil?
       rescue SignalException => e
         RubyLanguageServer.logger.error "We received a signal.  Let's bail: #{e}"
         exit(true)
@@ -21,7 +21,7 @@ module RubyLanguageServer
       end
     end
 
-    def return_response(id, response, io = STDOUT)
+    def return_response(id, response, io = $stdout)
       full_response = {
         jsonrpc: '2.0',
         id: id,
@@ -35,7 +35,7 @@ module RubyLanguageServer
       io.flush
     end
 
-    def send_notification(message, params, io = STDOUT)
+    def send_notification(message, params, io = $stdout)
       full_response = {
         jsonrpc: '2.0',
         method: message,
@@ -49,7 +49,7 @@ module RubyLanguageServer
       io.flush
     end
 
-    def process_request(io = STDIN)
+    def process_request(io = $stdin)
       request_body = get_request(io)
       # RubyLanguageServer.logger.debug "request_body: #{request_body}"
       request_json = JSON.parse request_body
@@ -71,7 +71,7 @@ module RubyLanguageServer
       end
     end
 
-    def get_request(io = STDIN)
+    def get_request(io = $stdin)
       initial_line = get_initial_request_line(io)
       RubyLanguageServer.logger.debug "initial_line: #{initial_line}"
       length = get_length(initial_line)
@@ -89,7 +89,7 @@ module RubyLanguageServer
       content
     end
 
-    def get_initial_request_line(io = STDIN)
+    def get_initial_request_line(io = $stdin)
       io.gets
     end
 
@@ -99,23 +99,23 @@ module RubyLanguageServer
       string.match(/Content-Length: (\d+)/)[1].to_i
     end
 
-    def get_content(size, io = STDIN)
+    def get_content(size, io = $stdin)
       io.read(size)
     end
 
     # http://www.alecjacobson.com/weblog/?p=75
-    # def stdin_read_char
+    # def $stdin_read_char
     #   begin
     #     # save previous state of stty
     #     old_state = `stty -g`
     #     # disable echoing and enable raw (not having to press enter)
     #     system "stty raw -echo"
-    #     c = STDIN.getc.chr
+    #     c = $stdin.getc.chr
     #     # gather next two characters of special keys
     #     if(c=="\e")
     #       extra_thread = Thread.new{
-    #         c = c + STDIN.getc.chr
-    #         c = c + STDIN.getc.chr
+    #         c = c + $stdin.getc.chr
+    #         c = c + $stdin.getc.chr
     #       }
     #       # wait just long enough for special keys to get swallowed
     #       extra_thread.join(0.00001)

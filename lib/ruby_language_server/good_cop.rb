@@ -143,7 +143,7 @@ module RubyLanguageServer
         pathname = Pathname.new(my_path)
         my_directory = pathname.dirname
         fallback_pathname = my_directory + '../resources/fallback_rubocop.yml'
-        project_path = RubyLanguageServer::ProjectManager.root_path + '.rubocop.yml'
+        project_path = "#{RubyLanguageServer::ProjectManager.root_path}/.rubocop.yml"
         possible_config_paths = [project_path, fallback_pathname.to_s]
         possible_config_paths.detect { |path| File.exist?(path) }
       end
