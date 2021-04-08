@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'fuzzy_match'
-require 'amatch' # note that you have to require this... fuzzy_match won't require it for you
+require 'amatch' # REVIEW: that you have to require this... fuzzy_match won't require it for you
 FuzzyMatch.engine = :amatch # This should be in a config somewhere
 
 module RubyLanguageServer
