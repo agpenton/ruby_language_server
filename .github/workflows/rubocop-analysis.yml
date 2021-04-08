@@ -29,6 +29,8 @@ jobs:
           
       - name: Clean the Gemfile.lock.
         run: rm -f Gemfile.lock
+      - name: Install code-scanning-rubocop
+        run: gem install code-scanning-rubocop
 
       # This step is not necessary if you add the gem to your Gemfile
       - name: Install Code Scanning integration
