@@ -8,6 +8,10 @@ The goal of this project is to provide a [language server](https://microsoft.git
 
 Beta.  It does some stuff.  Pretty stable.  Used day-to-day.
 
+[![CI-DEV](https://github.com/agpenton/ruby_language_server/actions/workflows/releases.yml/badge.svg?branch=develop)](https://github.com/agpenton/ruby_language_server/actions/workflows/releases.yml)
+[![Rubocop](https://github.com/agpenton/ruby_language_server/actions/workflows/rubocop-analysis.yml/badge.svg?branch=develop)](https://github.com/agpenton/ruby_language_server/actions/workflows/rubocop-analysis.yml)
+[![Rake Test](https://github.com/agpenton/ruby_language_server/actions/workflows/rake_test.yml/badge.svg?branch=develop)](https://github.com/agpenton/ruby_language_server/actions/workflows/rake_test.yml)
+
 # Features
 
 * Definitions
