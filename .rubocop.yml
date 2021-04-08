@@ -259,3 +259,5 @@ Style/YodaCondition:
 Style/ZeroLengthPredicate:
   Exclude:
     - 'lib/ruby_language_server/line_context.rb'
+Metrics/ParameterLists:
+  Max: 5

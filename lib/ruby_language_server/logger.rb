@@ -9,6 +9,6 @@ module RubyLanguageServer
   class << self
     attr_accessor :logger
   end
-  @logger = ::Logger.new(STDERR, level: level)
+  @logger = ::Logger.new($stderr, level: level)
   @logger.log(level, "Logger started at level #{level_name} -> #{level}")
 end
