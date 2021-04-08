@@ -13,7 +13,8 @@ AllCops:
   TargetRubyVersion: 2.6
 
 Layout/SpaceInsideHashLiteralBraces:
-  Enabled: false
+  EnforcedStyle: no_space
+#  Enabled: false
 
 Lint/EmptyWhen:
   Enabled: false
@@ -21,7 +22,7 @@ Lint/EmptyWhen:
 Lint/RescueException:
   Enabled: false
 
-Metrics/LineLength:
+Layout/LineLength:
   Enabled: false
 
 Style/CommentedKeyword:
@@ -111,9 +112,9 @@ Style/BlockDelimiters:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: braces, no_braces, context_dependent
-Style/BracesAroundHashParameters:
-  Exclude:
-    - 'lib/ruby_language_server/server.rb'
+#Style/BracesAroundHashParameters:
+#  Exclude:
+#    - 'lib/ruby_language_server/server.rb'
 
 # Cop supports --auto-correct.
 # Configuration parameters: Keywords.
