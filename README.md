@@ -8,8 +8,6 @@ The goal of this project is to provide a [language server](https://microsoft.git
 
 Beta.  It does some stuff.  Pretty stable.  Used day-to-day.
 
-Help wanted.
-
 # Features
 
 * Definitions
