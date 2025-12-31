@@ -15,6 +15,7 @@ module RubyLanguageServer
     include ScopeParserCommands::RspecCommands
     include ScopeParserCommands::RailsCommands
     include ScopeParserCommands::RubyCommands
+    attr_reader :sexp, :lines, :current_scope
 
     attr_reader :current_scope, :lines
 
@@ -81,8 +82,11 @@ module RubyLanguageServer
         scope.save!
       end
 
-      # Process parameters (adds them as variables in scope)
-      visit_parameters(node.parameters) if node.parameters
+    # def self.something(par)...
+    # [:var_ref, [:@kw, "self", [28, 14]]], [[:@period, ".", [28, 18]], [:@ident, "something", [28, 19]], [:paren, [:params, [[:@ident, "par", [28, 23]]], nil, nil, nil, nil, nil, nil]], [:bodystmt, [[:assign, [:var_field, [:@ident, "pax", [29, 12]]], [:var_ref, [:@ident, "par", [29, 18]]]]], nil, nil, nil]]
+    def on_defs(args, rest)
+      on_def(rest[1], rest[2..]) if args[1][1] == 'self' && rest[0][1] == '.'
+    end
 
       # Process body only if not shallow
       if @shallow

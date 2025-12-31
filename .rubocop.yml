@@ -14,22 +14,7 @@ plugins:
   - rubocop-rake
 
 AllCops:
-  TargetRubyVersion: 3.3 # 4.0 not yet afailable Tue Dec 30 15:07:23 PST 2025
-  NewCops: enable
-  Exclude:
-    - "spec/fixture_files/**/*"
-
-Naming/PredicatePrefix:
-  Enabled: false
-
-Naming/PredicateMethod:
-  Enabled: false
-
-Gemspec/DependencyVersion:
-  Enabled: false
-
-Gemspec/DevelopmentDependencies:
-  Enabled: false
+  TargetRubyVersion: 3.0
 
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
@@ -129,13 +114,6 @@ Style/BlockDelimiters:
     - "spec/lib/ruby_language_server/scope_parser_spec.rb"
 
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: braces, no_braces, context_dependent
-#Style/BracesAroundHashParameters:
-#  Exclude:
-#    - 'lib/ruby_language_server/server.rb'
-
-# Cop supports --auto-correct.
 # Configuration parameters: Keywords.
 # Keywords: TODO, FIXME, OPTIMIZE, HACK, REVIEW
 Style/CommentAnnotation:
@@ -172,19 +150,23 @@ Style/GuardClause:
 Style/HashSyntax:
   Exclude:
     - "lib/ruby_language_server/location.rb"
+    - "spec/lib/ruby_language_server/good_cop_spec.rb"
 
 # Cop supports --auto-correct.
 # Configuration parameters: IgnoredMethods.
 Style/MethodCallWithoutArgsParentheses:
   Exclude:
     - "lib/ruby_language_server/scope_parser.rb"
+    - "spec/lib/ruby_language_server/good_cop_spec.rb"
 
 Style/MultilineBlockChain:
   Exclude:
+    - "lib/ruby_language_server/good_cop.rb"
 
 # Cop supports --auto-correct.
 Style/MutableConstant:
   Exclude:
+    - "lib/ruby_language_server/good_cop.rb"
     - "lib/ruby_language_server/scope_data/base.rb"
     - "lib/ruby_language_server/version.rb"
 
@@ -192,10 +174,6 @@ Style/MutableConstant:
 Style/NegatedWhile:
   Exclude:
     - "lib/ruby_language_server/scope_parser.rb"
-
-Style/OpenStructUse:
-  Exclude:
-    - "spec/**/*" # Go ahead!  Use OpenStruct in specs!
 
 # Cop supports --auto-correct.
 # Configuration parameters: AllowSafeAssignment, AllowInMultilineConditions.
@@ -238,6 +216,7 @@ Style/StringLiterals:
     - "lib/ruby_language_server/scope_parser.rb"
     - "spec/lib/ruby_language_server/code_file_spec.rb"
     - "spec/lib/ruby_language_server/completion_spec.rb"
+    - "spec/lib/ruby_language_server/good_cop_spec.rb"
     - "spec/lib/ruby_language_server/line_context_spec.rb"
     - "spec/lib/ruby_language_server/scope_parser_spec.rb"
 
@@ -277,5 +256,3 @@ Style/YodaCondition:
 Style/ZeroLengthPredicate:
   Exclude:
     - "lib/ruby_language_server/line_context.rb"
-Metrics/ParameterLists:
-  Max: 5

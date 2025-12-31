@@ -18,7 +18,10 @@ module RubyLanguageServer
       root_path = params['rootPath']
       root_uri = params['rootUri']
       @project_manager = ProjectManager.new(root_path, root_uri)
-      @project_manager.scan_all_project_files
+      @project_manager.scan_all_project_files(@mutex)
+      gem_string = ENV.fetch('ADDITIONAL_GEMS', nil)
+      gem_array = (gem_string.split(',').compact.map(&:strip).reject { |string| string == '' } if gem_string && !gem_string.empty?)
+      @project_manager.install_additional_gems(gem_array)
       {
         capabilities: {
           textDocumentSync: 1,

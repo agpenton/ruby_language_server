@@ -20,7 +20,7 @@ module RubyLanguageServer
     def self.build(uri, text)
       RubyLanguageServer.logger.debug("CodeFile initialize #{uri}")
 
-      create!(uri:, text:)
+      create!(uri: uri, text: text)
     end
 
     SYMBOL_KIND = {
