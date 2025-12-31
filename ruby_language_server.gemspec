@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['kurt@CircleW.org']
 
   spec.summary       = 'Provide a language server implementation for ruby in ruby.'
-  spec.description   = 'See https://microsoft.github.io/language-server-protocol/ "A Language Server is meant to provide the language-specific smarts and communicate with development tools over a protocol that enables inter-process communication."'
+  spec.description   = 'Provide a language server implementation for ruby in ruby.  See https://microsoft.github.io/language-server-protocol/ "A Language Server is meant to provide the language-specific smarts and communicate with development tools over a protocol that enables inter-process communication."'
   spec.homepage      = 'https://github.com/kwerle/ruby_language_server'
   spec.license       = 'MIT'
   spec.required_ruby_version = '>=2.7.0'
@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
     spec.metadata['changelog_uri'] = 'https://github.com/kwerle/ruby_language_server/blob/develop/CHANGELOG.txt'
   else
     raise 'RubyGems 2.0 or newer is required to protect against ' \
-      'public gem pushes.'
+          'public gem pushes.'
   end
 
   # Specify which files should be added to the gem when it is released.
@@ -36,29 +36,22 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # Normally the system will have these - but not if it's a stripped down docker image
+  spec.add_dependency 'activerecord', '~>8.1'
+  spec.add_dependency 'amatch'      # in c
   spec.add_dependency 'bundler'
   spec.add_dependency 'etc'
-  spec.add_dependency 'json'
-
-  # No - do not put these in dev - they are needed for the app
-  spec.add_dependency 'rubocop'
-  spec.add_dependency 'rubocop-performance' # Linter - no longer needed - use additional gems?
-  spec.add_dependency 'rubocop-rspec'       # Linter - no longer needed - use additional gems?
-
-  spec.add_dependency 'amatch'      # in c
   spec.add_dependency 'fuzzy_match' # completion matching
 
   spec.add_dependency 'activerecord', '~>5.2.4.5'
   # spec.add_dependency 'activerecord', '~>5.2'
   spec.add_dependency 'sqlite3'
 
-  spec.add_development_dependency 'guard'
+  spec.add_development_dependency 'debug'
+  spec.add_development_dependency 'guard' # as of ruby 4: Sorry, you can't use Pry without Readline or a compatible library.
   spec.add_development_dependency 'guard-minitest'
   spec.add_development_dependency 'guard-rubocop'
   spec.add_development_dependency 'minitest'
-  spec.add_development_dependency 'minitest-color'
-  spec.add_development_dependency 'pry'
-  spec.add_development_dependency 'pry-byebug'
+  spec.add_development_dependency 'minitest-reporters'
   spec.add_development_dependency 'rake' # required by guard :-(
   spec.add_development_dependency 'sexp_processor'
 end

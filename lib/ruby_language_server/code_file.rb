@@ -23,17 +23,6 @@ module RubyLanguageServer
       create!(uri: uri, text: text)
     end
 
-    # def text=(new_text)
-    #   RubyLanguageServer.logger.debug("text= for #{uri}")
-    #   if @text == new_text
-    #     RubyLanguageServer.logger.debug('IT WAS THE SAME!!!!!!!!!!!!')
-    #     return
-    #   end
-    #   @text = new_text
-    #   update_attribute(:refresh_root_scope, true)
-    #   root_scope
-    # end
-    #
     SYMBOL_KIND = {
       file: 1,
       module: 5, # 2,
@@ -81,7 +70,7 @@ module RubyLanguageServer
         kind = 9 if scope.name == 'initialize' # Magical special case
         scope_hash = {
           name: scope.name,
-          kind: kind,
+          kind:,
           location: Location.hash(uri, scope.top_line)
         }
         container_name = ancestor_scope_name(scope)
@@ -91,7 +80,7 @@ module RubyLanguageServer
       tags += variables.constant_variables.reload.map do |variable|
         name = variable.name
         {
-          name: name,
+          name:,
           kind: SYMBOL_KIND[:constant],
           location: Location.hash(uri, variable.line - 1),
           containerName: variable.scope.name
@@ -119,7 +108,7 @@ module RubyLanguageServer
       update(text: new_text, refresh_root_scope: true)
     end
 
-    def refresh_scopes_if_needed
+    def refresh_scopes_if_needed(shallow: false)
       return unless refresh_root_scope
 
       RubyLanguageServer.logger.debug("Asking about root_scope for #{uri}")
@@ -128,7 +117,7 @@ module RubyLanguageServer
           self.class.transaction do
             scopes.clear
             variables.clear
-            new_root = ScopeParser.new(text).root_scope
+            new_root = ScopeParser.new(text, shallow).root_scope
             RubyLanguageServer.logger.debug("new_root.children #{new_root.children.as_json}") if new_root&.children
             raise ActiveRecord::Rollback if new_root.nil? || new_root.children.blank?
 
@@ -143,7 +132,7 @@ module RubyLanguageServer
     def context_at_location(position)
       lines = text.split("\n")
       line = lines[position.line]
-      return [] if line.nil? || line.strip.length.zero?
+      return [] if line.nil? || line.strip.empty?
 
       LineContext.for(line, position.character)
     end

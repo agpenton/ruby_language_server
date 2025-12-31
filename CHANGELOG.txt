@@ -1,5 +1,48 @@
 # Changelog
 
+#### 0.4.2 Sat Aug  2 09:20:41 PDT 2025
+
+* Update thor (security advisory)
+
+#### 0.4.1 Mon May 12 20:49:11 PDT 2025
+
+* Update ruby
+* Update rails
+* Add autopublish
+* tweak extension loading to address bug - maybe
+
+#### 0.4.0 Fri May  9 22:33:03 PDT 2025
+
+* Ditch rubocop - it has its own LSP
+* Also update rails version
+
+#### 0.3.18 Tue Sep 10 20:10:21 PDT 2024
+
+* bump dependencies
+
+#### 0.3.17 Mon Aug 19 21:47:30 PDT 2024
+
+* Update ruby to 3.3
+
+#### 0.3.16.1 Thu Feb 17 23:27:11 PST 2022
+
+* Update docker image to be cross-platform
+
+#### 0.3.16 Fri Jun 11 19:03:10 PDT 2021
+
+* Fixes for windows, thanks to mattn
+* Make rubocop gem loading more robust
+
+#### 0.3.15 Tue May  4 15:34:22 PDT 2021
+
+* Add support for rspec context blocks #53
+
+#### 0.3.14 Sat Apr 24 21:09:07 PDT 2021
+
+* Update rails activerecord to 6.1
+* Update ruby to 3
+* Fix some tests, docs, etc
+
 #### 0.3.13 Fri Feb 14 00:55:28 PST 2020
 
 * More stabbing at goodcop gemfile issues

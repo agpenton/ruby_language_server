@@ -36,18 +36,48 @@ module RubyLanguageServer
         {
           isIncomplete: true,
           items: completions.uniq.map do |word, hash|
-            {
+            item = {
               label: word,
               kind: COMPLETION_ITEM_KIND[hash[:type]&.to_sym]
             }
+
+            # Add snippet for methods with parameters
+            if hash[:type] == 'method' && hash[:parameters]&.any?
+              item[:insertText] = generate_method_snippet(word, hash[:parameters])
+              item[:insertTextFormat] = 2 # Snippet format
+            end
+
+            item
           end
         }
       end
 
       private
 
+      def generate_method_snippet(method_name, parameters)
+        return method_name if parameters.empty?
+
+        # Build snippet with tab stops
+        param_snippets = []
+        tab_index = 1
+
+        parameters.each do |param|
+          param_snippets << case param['type']
+                            when 'keyword'
+                              # Keyword args with placeholder for value
+                              "#{param['name']} ${#{tab_index}:value}"
+                            else
+                              # All other param types use the parameter name
+                              "${#{tab_index}:#{param['name']}}"
+                            end
+          tab_index += 1
+        end
+
+        "#{method_name}(#{param_snippets.join(', ')})"
+      end
+
       def scopes_with_name(name, scopes)
-        return scopes.where(name: name) if scopes.respond_to?(:where)
+        return scopes.where(name:) if scopes.respond_to?(:where)
 
         scopes.select { |scope| scope.name == name }
       end
@@ -80,21 +110,18 @@ module RubyLanguageServer
       def scope_completions(word, scopes)
         return module_completions(word) if word.match?(/\A[A-Z][a-z]/)
 
-        # scope_ids = scopes.map(&:id)
-        # word_scopes = scopes.to_a + RubyLanguageServer::ScopeData::Scope.where(parent_id: scope_ids)
-        # scope_words = word_scopes.select(&:named_scope?).sort_by(&:depth).map { |scope| [scope.name, scope] }
-        # variable_words = RubyLanguageServer::ScopeData::Variable.where(scope_id: scope_ids).map { |variable| [variable.name, variable.scope] }
-        # words = (scope_words + variable_words).to_h
-        # good_words = FuzzyMatch.new(words.keys, threshold: 0.01).find_all(word).slice(0..10) || []
-        # words = good_words.each_with_object({}) { |w, hash| hash[w] = {depth: words[w].depth, type: words[w].class_type} }.to_h
-
         scope_ids = scopes.map(&:id)
         word_scopes = scopes.to_a + RubyLanguageServer::ScopeData::Scope.where(parent_id: scope_ids).closest_to(word).limit(5)
         scope_words = word_scopes.select(&:named_scope?).sort_by(&:depth).map { |scope| [scope.name, scope] }
         variable_words = RubyLanguageServer::ScopeData::Variable.where(scope_id: scope_ids).closest_to(word).limit(5).map { |variable| [variable.name, variable.scope] }
         words = (scope_words + variable_words).to_h
         good_words = FuzzyMatch.new(words.keys, threshold: 0.01).find_all(word).slice(0..10) || []
-        words = good_words.each_with_object({}) { |w, hash| hash[w] = {depth: words[w].depth, type: words[w].class_type} }.to_h
+        good_words.each_with_object({}) do |w, hash|
+          scope = words[w]
+          hash[w] = {depth: scope.depth, type: scope.class_type}
+          # Include parameters for methods
+          hash[w][:parameters] = scope.parsed_parameters if scope.method? && scope.parameters.present?
+        end
       end
     end
   end

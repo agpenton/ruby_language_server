@@ -8,9 +8,11 @@ module RubyLanguageServer
     # It is used to track top & bottom line, variables in this scope, constants, and children - which could be functions, classes, blocks, etc.  Anything that adds scope.
     class Scope < Base
       has_many :variables, dependent: :destroy
-      belongs_to :code_file
+      belongs_to :code_file # , optional: false
       belongs_to :parent, class_name: 'Scope', optional: true
       has_many :children, class_name: 'Scope', foreign_key: :parent_id
+
+      validate :bottom_line_ge_top_line, unless: :root_scope?
 
       scope :method_scopes, -> { where(class_type: TYPE_METHOD) }
       scope :for_line, ->(line) { where('top_line <= ? AND bottom_line >= ?', line, line).or(where(parent_id: nil)) }
@@ -22,13 +24,14 @@ module RubyLanguageServer
       # attr_accessor :name            # method
       # attr_accessor :superclass_name # superclass name
 
-      def self.build(parent = nil, type = TYPE_ROOT, name = '', top_line = 1, column = 1)
-        full_name = [parent ? parent.full_name : nil, name].compact.join(JoinHash[type])
+      def self.build(parent = nil, type = TYPE_ROOT, name = '', top_line = 1, column = 1, bottom_line = nil) # rubocop:disable Metrics/ParameterLists
+        full_name = [parent&.full_name, name].compact.join(JoinHash[type])
         create!(
-          parent: parent,
-          top_line: top_line,
-          column: column,
-          name: name,
+          parent:,
+          top_line:,
+          column:,
+          bottom_line:,
+          name:,
           path: full_name,
           class_type: type
         )
@@ -59,7 +62,7 @@ module RubyLanguageServer
         if partial.start_with?('::')
           self.superclass_name = partial.gsub(/^::/, '')
         else
-          self.superclass_name = [parent ? parent.full_name : nil, partial].compact.join(JoinHash[class_type])
+          self.superclass_name = [parent&.full_name, partial].compact.join(JoinHash[class_type])
         end
         save!
       end
@@ -77,10 +80,33 @@ module RubyLanguageServer
         [TYPE_MODULE, TYPE_CLASS, TYPE_METHOD, TYPE_VARIABLE].include?(class_type)
       end
 
+      # Get parameters as an array of hashes
+      def parsed_parameters
+        return [] unless parameters.present?
+
+        JSON.parse(parameters)
+      rescue JSON::ParserError
+        []
+      end
+
+      # Set parameters from an array
+      def set_parameters(params_array)
+        self.parameters = params_array.to_json if params_array.present?
+      end
+
+      # Called from ScopeParser to cleanup empty blocks.
+      def close
+        destroy! if block_scope? && variables.none?
+      end
+
       private
 
       def scope_parts
         path&.split(/#{JoinHash.values.reject(&:blank?).uniq.join('|')}/)
+      end
+
+      def bottom_line_ge_top_line
+        errors.add(:bottom_line, 'must be greater than or equal to top line') if bottom_line && top_line && bottom_line < top_line
       end
     end
   end

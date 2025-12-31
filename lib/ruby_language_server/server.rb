@@ -5,6 +5,7 @@ require 'json'
 # Deal with the various languageserver calls.
 module RubyLanguageServer
   class Server
+    Position = Struct.new('Position', :line, :character)
     attr_accessor :io
 
     def initialize(mutex)
@@ -85,7 +86,7 @@ module RubyLanguageServer
 
     def send_diagnostics(uri, text)
       hash = @project_manager.update_document_content(uri, text)
-      io.send_notification('textDocument/publishDiagnostics', uri: uri, diagnostics: hash)
+      io.send_notification('textDocument/publishDiagnostics', uri:, diagnostics: hash)
     end
 
     def on_textDocument_didOpen(params)
@@ -124,11 +125,9 @@ module RubyLanguageServer
       textDocument['uri']
     end
 
-    Position = Struct.new('Position', :line, :character)
-
     def postition_from_params(params)
       position = params['position']
-      Position.new((position['line']).to_i, position['character'].to_i)
+      Position.new(position['line'].to_i, position['character'].to_i)
     end
   end
 end

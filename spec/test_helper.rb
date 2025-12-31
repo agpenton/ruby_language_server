@@ -1,8 +1,19 @@
 # frozen_string_literal: true
 
-require 'pry'
-require 'minitest/color'
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start do
+    add_filter '/spec/'
+    add_filter '/vendor/'
+  end
+end
+
+require 'debug'
+require 'ostruct'
 require_relative '../lib/ruby_language_server'
+
+require 'minitest/reporters'
+Minitest::Reporters.use!
 
 module DatabaseClearing
   def setup

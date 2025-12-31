@@ -1,3 +1,5 @@
+![Build Status](https://github.com/kwerle/ruby_language_server/actions/workflows/test.yml/badge.svg)
+
 # Overview
 
 https://github.com/kwerle/ruby_language_server
@@ -6,7 +8,7 @@ The goal of this project is to provide a [language server](https://microsoft.git
 
 # Status
 
-Beta.  It does some stuff.  Pretty stable.  Used day-to-day.
+Used day-to-day.
 
 [![CI-DEV](https://github.com/agpenton/ruby_language_server/actions/workflows/releases.yml/badge.svg?branch=develop)](https://github.com/agpenton/ruby_language_server/actions/workflows/releases.yml)
 [![Rubocop](https://github.com/agpenton/ruby_language_server/actions/workflows/rubocop-analysis.yml/badge.svg?branch=develop)](https://github.com/agpenton/ruby_language_server/actions/workflows/rubocop-analysis.yml)
@@ -14,16 +16,17 @@ Beta.  It does some stuff.  Pretty stable.  Used day-to-day.
 
 # Features
 
-* Definitions
-* Completions
-* Lint - thanks to [RuboCop](https://github.com/bbatsov/rubocop)
-* Please see the [FAQ_ROADMAP.md](./FAQ_ROADMAP.md)
+- Definitions
+- Completions
+- Please see the [FAQ_ROADMAP.md](./FAQ_ROADMAP.md)
 
 # Editor Integrations
 
 You probably want to use one of the developed integrations:
-* Atom - https://github.com/kwerle/ide-ruby
-* Theia - https://github.com/kwerle/theia_ruby_language_server
+
+- VSCode - https://github.com/kwerle/vscode_ruby_language_server
+- Atom - https://github.com/kwerle/ide-ruby
+- Theia - https://github.com/kwerle/theia_ruby_language_server
 
 # Running
 
@@ -31,36 +34,42 @@ You probably want to use one of the developed integrations:
 
 # Development
 
-Clone.  I love git [HubFlow](https://datasift.github.io/gitflow/).
+Master branch is for releases. Develop branch is for ongoing development. Fork off develop;
+I'll merge to master for releases.
 
-Check out the [Makefile](Makefile).  You are going to want to do
+Clone. I love git [HubFlow](https://datasift.github.io/gitflow/).
+
+Check out the [Makefile](Makefile). You are going to want to do
 `make guard` in one window and `make continuous_development` in another.
 
-* In Atom: install the ide-ruby.
-* Settings > Packages > ide-ruby > Image Name > local_ruby_language_server
-* CMD-ALT-CTRL-l (that's an L) will reload the window
-* CMD-ALT-i will show debugging info
-
-Write tests and guard will run them.  Make changes and reload the window.  Test them out.
+I use vscode with the "Ruby Language Server" extension install. I edit the settings to use
+the docker image local_ruby_language_server. Quitting and restarting vscode to load the next
+iteration.
 
 # Similar
 
-* [mtsmfm/language_server-ruby](https://github.com/mtsmfm/language_server-ruby)
-* [castwide/solargraph](https://github.com/castwide/solargraph)
+- [mtsmfm/language_server-ruby](https://github.com/mtsmfm/language_server-ruby)
+- [castwide/solargraph](https://github.com/castwide/solargraph)
 
 # Release instructions to self
 
-* For for release
-* bump version in [version.rb](lib/ruby_language_server/version.rb) file and [Gemfile.lock](Gemfile.lock)
-* [CHANGELOG.txt](CHANGELOG.txt)
-* merge to master, etc
-* `make gem_release`
+For gem release
+
+- bump version in [version.rb](lib/ruby_language_server/version.rb) file and [Gemfile.lock](Gemfile.lock)
+- [CHANGELOG.txt](CHANGELOG.txt)
+- merge to master, etc
+- `make gem_release`
+
+For docker release
+
+- `make publish_cross_platform_image`
 
 # Authors
 
-* [Kurt Werle](kurt@CircleW.org)
+- [Kurt Werle](kurt@CircleW.org)
 
 # Contributors
 
-* [Sebastian Delmont](sd@notso.net)
-* *Your name here!*
+- [Sebastian Delmont](sd@notso.net)
+- [mattn](https://github.com/mattn)
+- _Your name here!_

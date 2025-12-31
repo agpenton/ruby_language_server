@@ -1,23 +1,36 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'socket'
 
 module RubyLanguageServer
   class IO
+    attr_reader :using_socket
+
     def initialize(server, mutex)
       @server = server
       @mutex = mutex
       server.io = self
+
+      configure_io
+
       loop do
         (id, response) = process_request($stdin)
         return_response(id, response, $stdout) unless id.nil?
       rescue SignalException => e
         RubyLanguageServer.logger.error "We received a signal.  Let's bail: #{e}"
-        exit(true)
+        exit
       rescue Exception => e
         RubyLanguageServer.logger.error "Something when horribly wrong: #{e}"
         backtrace = e.backtrace * "\n"
         RubyLanguageServer.logger.error "Backtrace:\n#{backtrace}"
+      end
+      return unless @using_socket
+
+      begin
+        @in&.close
+      rescue StandardError => e
+        RubyLanguageServer.logger.error "Error closing socket: #{e}"
       end
     end
 
@@ -39,31 +52,36 @@ module RubyLanguageServer
       full_response = {
         jsonrpc: '2.0',
         method: message,
-        params: params
+        params:
       }
-      body = JSON.unparse(full_response)
+      body = JSON.generate(full_response)
       RubyLanguageServer.logger.info "send_notification body: #{body}"
-      io.write "Content-Length: #{body.length + 0}\r\n"
+      io.write "Content-Length: #{body.length}\r\n"
       io.write "\r\n"
       io.write body
-      io.flush
+      io.flush if io.respond_to?(:flush)
     end
 
     def process_request(io = $stdin)
       request_body = get_request(io)
-      # RubyLanguageServer.logger.debug "request_body: #{request_body}"
       request_json = JSON.parse request_body
       id = request_json['id']
       method_name = request_json['method']
       params = request_json['params']
       method_name = "on_#{method_name.gsub(/[^\w]/, '_')}"
       if @server.respond_to? method_name
-        RubyLanguageServer.logger.debug 'Locking io'
-        response = @mutex.synchronize do
-          @server.send(method_name, params)
+        response = ActiveRecord::Base.connection_pool.with_connection do
+          retries = 3
+          begin
+            @server.send(method_name, params)
+          rescue StandardError => e
+            RubyLanguageServer.logger.warn("Error updating: #{e}\n#{e.backtrace * "\n"}")
+            sleep 5
+            retries -= 1
+            retry unless retries <= 0
+          end
         end
-        RubyLanguageServer.logger.debug 'UNLocking io'
-        exit(true) if response == 'EXIT'
+        exit if response == 'EXIT'
         [id, response]
       else
         RubyLanguageServer.logger.warn "SERVER DOES NOT RESPOND TO #{method_name}"
@@ -78,7 +96,7 @@ module RubyLanguageServer
       content = ''
       while content.length < length + 2
         begin
-          content += get_content(length + 2, io) # Why + 2?  CRLF?
+          content += get_content(length + 2) # Why + 2?  CRLF?
         rescue Exception => e
           RubyLanguageServer.logger.error e
           # We have almost certainly been disconnected from the server
@@ -102,7 +120,6 @@ module RubyLanguageServer
     def get_content(size, io = $stdin)
       io.read(size)
     end
-
     # http://www.alecjacobson.com/weblog/?p=75
     # def $stdin_read_char
     #   begin
